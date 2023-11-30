@@ -15,7 +15,7 @@ function App() {
     <main className='relative flex-1 flex-col h-screen w-screen p-10 bg-gray-50'>
       <h2 className='text-center text-2xl font-bold'>Web RTC Test</h2>
       <Card className='my-5 p-4'>
-        <CallForm />
+        <CallForm starting={starting} />
         <LocalId
           peerIDRef={peerIDRef}
           starting={starting}

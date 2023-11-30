@@ -11,7 +11,7 @@ const formSchema = z.object({
     remoteID: z.string().min(36, "Remote ID required").max(36, "Remote ID required"),
 })
 
-export default function CallForm() {
+export default function CallForm({ starting }: { starting: boolean }) {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -46,7 +46,7 @@ export default function CallForm() {
                         </FormItem>
                     )}
                 />
-                <Button className='uppercase text-xs font-bold tracking-wide'>
+                <Button disabled={starting} className='uppercase text-xs font-bold tracking-wide'>
                     call
                 </Button>
             </form>
