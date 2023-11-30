@@ -8,7 +8,7 @@ import { FormControl, FormField, FormItem, FormMessage, Form } from './ui/form'
 
 
 const formSchema = z.object({
-    remoteID: z.string().min(36).max(36),
+    remoteID: z.string().min(36, "Remote ID required").max(36, "Remote ID required"),
 })
 
 export default function CallForm() {
