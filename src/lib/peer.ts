@@ -10,7 +10,7 @@ export const peerConnection = {
   startSession: (): Promise<string> =>
     new Promise((resolve, reject) => {
       try {
-        peerInstance = new Peer();
+        peerInstance = new Peer({ debug: 3 });
         peerInstance
           .on("open", (id) => {
             resolve(id);

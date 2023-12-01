@@ -16,7 +16,7 @@ function App() {
 
   useEffect(() => {
     peer?.on("call", async (call) => {
-      // console.log("calling")
+      console.log("calling")
       const localStream = await getMediaStream();
       call.answer(localStream)
     })

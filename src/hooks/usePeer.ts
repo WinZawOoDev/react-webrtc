@@ -1,9 +1,10 @@
 import Peer from "peerjs";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { peerConnection } from "../lib/peer";
 
 export default function usePeer() {
-  const [peer, setPeer] = useState<Peer | undefined>();
+  
+  const peer = useRef<Peer | undefined>();
   const [starting, setStarting] = useState<boolean>(true);
 
   useEffect(() => {
@@ -12,9 +13,9 @@ export default function usePeer() {
 
   async function startPeer() {
     await peerConnection.startSession();
-    setPeer(peerConnection.getPeer());
+    peer.current = peerConnection.getPeer();
     setStarting(false);
   }
 
-  return { peer, starting };
+  return { peer: peer.current, starting };
 }
