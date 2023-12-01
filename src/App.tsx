@@ -1,32 +1,42 @@
 import { Card } from './components/ui/card'
 import './App.css'
 import usePeer from './hooks/usePeer'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Toaster } from './components/ui/toaster'
 import CallForm from './components/CallForm'
 import LocalId from './components/LocalId'
 import VideoFrame from './components/videoFrame'
+import Peer from 'peerjs'
 
 function App() {
 
-  const { peer, starting } = usePeer();
+  const [peerId, setPeerID] = useState("");
   const peerIDRef = useRef<HTMLSpanElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null)
   const localVideoRef = useRef<HTMLVideoElement>(null)
+  const peerInstance = useRef<Peer | undefined>();
+  const [starting, setStarting] = useState(false);
 
   useEffect(() => {
-    peer?.on("call", async (call) => {
+    setStarting(true);
+    const peer = new Peer({ debug: 2 });
+    peer.on('open', (id: string) => {
+      setPeerID(id);
+    })
+    peer.on("call", async (call) => {
       console.log("calling")
       const localStream = await getMediaStream();
       call.answer(localStream)
     })
+    peerInstance.current = peer;
+    setStarting(false);
   }, [])
 
   async function mediasCall(remoteID: string) {
     console.log(remoteID);
     const localStream = await getMediaStream();
     // console.log(peer);
-    const call = peer?.call(remoteID, localStream);
+    const call = peerInstance.current?.call(remoteID, localStream);
     // console.log(call);
     call?.on("stream", (remoteStream: MediaStream) => {
       streamVideo(remoteVideoRef, remoteStream);
@@ -57,7 +67,7 @@ function App() {
         <LocalId
           peerIDRef={peerIDRef}
           starting={starting}
-          peerId={peer?.id!}
+          peerId={peerId}
         />
       </Card>
       <div className='my-10 lg:flex justify-center items-center'>
