@@ -25,7 +25,12 @@ function App() {
     peer.on("call", async (call) => {
       console.log("calling")
       const localStream = await getMediaStream();
-      call.answer(localStream)
+      streamVideo(localVideoRef, localStream);
+      call.answer(localStream);
+      call.on('stream', (remoteStream: MediaStream) => {
+        streamVideo(remoteVideoRef, remoteStream);
+      })
+      
     })
     peerInstance.current = peer;
     setStarting(false);
