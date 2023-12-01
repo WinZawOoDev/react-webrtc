@@ -30,8 +30,8 @@ function App() {
     // console.log(call);
     call?.on("stream", (remoteStream: MediaStream) => {
       streamVideo(remoteVideoRef, remoteStream);
-      streamVideo(localVideoRef, localStream)
     })
+    streamVideo(localVideoRef, localStream)
   }
 
   function getMediaStream() {

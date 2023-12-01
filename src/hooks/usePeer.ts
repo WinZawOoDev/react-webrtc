@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { peerConnection } from "../lib/peer";
 
 export default function usePeer() {
-  
   const peer = useRef<Peer | undefined>();
   const [starting, setStarting] = useState<boolean>(true);
 
