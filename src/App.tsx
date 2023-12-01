@@ -77,7 +77,7 @@ function App() {
         </div>
         <div className='m-2'>
           <VideoFrame
-            videoRef={localVideoRef}
+            videoRef={remoteVideoRef}
           />
         </div>
       </div>
