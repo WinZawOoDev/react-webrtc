@@ -1,4 +1,3 @@
-
 import * as z from 'zod'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
@@ -11,7 +10,7 @@ const formSchema = z.object({
     remoteID: z.string().min(36, "Remote ID required").max(36, "Remote ID required"),
 })
 
-export default function CallForm({ starting }: { starting: boolean }) {
+export default function CallForm({ disableSubmit, handleCall }: { disableSubmit: boolean, handleCall: (remoteVideoRef: string) => void }) {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -22,6 +21,7 @@ export default function CallForm({ starting }: { starting: boolean }) {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);
+        handleCall(values.remoteID);
     }
 
     return (
@@ -46,7 +46,7 @@ export default function CallForm({ starting }: { starting: boolean }) {
                         </FormItem>
                     )}
                 />
-                <Button disabled={starting} className='uppercase text-xs font-bold tracking-wide'>
+                <Button disabled={disableSubmit} className='uppercase text-xs font-bold tracking-wide'>
                     call
                 </Button>
             </form>
