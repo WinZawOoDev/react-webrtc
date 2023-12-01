@@ -1,6 +1,5 @@
 import { Card } from './components/ui/card'
 import './App.css'
-import usePeer from './hooks/usePeer'
 import { useEffect, useRef, useState } from 'react'
 import { Toaster } from './components/ui/toaster'
 import CallForm from './components/CallForm'
