@@ -18,6 +18,7 @@ export function useWebRTC() {
   const localVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    setAppState((prev) => ({ ...prev, starting: true }));
     const peer = new Peer({ debug: 2 });
     peer.on("open", function (id: string) {
       setAppState((prev) => ({ ...prev, peerId: id }));
@@ -28,6 +29,7 @@ export function useWebRTC() {
     });
 
     peerInstance.current = peer;
+    setAppState((prev) => ({ ...prev, starting: false }));
   }, []);
 
   async function mediasCall(remoteId: string) {
