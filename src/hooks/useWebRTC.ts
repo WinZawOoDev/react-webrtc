@@ -1,16 +1,14 @@
 import Peer, { MediaConnection } from "peerjs";
 import { useEffect, useRef, useState } from "react";
 
-type appStateType = {
+type rtcStateType = {
   peerId: string;
-  starting: boolean;
   connection: MediaConnection | undefined;
 };
 
 export function useWebRTC() {
-  const [appState, setAppState] = useState<appStateType>({
+  const [rtcState, setRtcState] = useState<rtcStateType>({
     peerId: "",
-    starting: false,
     connection: undefined,
   });
   const peerInstance = useRef<Peer | undefined>();
@@ -18,21 +16,17 @@ export function useWebRTC() {
   const localVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    setAppState((prev) => ({ ...prev, starting: true }));
     const peer = new Peer({ debug: 2 });
     peer.on("open", function (id: string) {
-      setAppState((prev) => ({ ...prev, peerId: id }));
+      setRtcState((prev) => ({ ...prev, peerId: id }));
     });
-
-    peer.on("call", (connection: MediaConnection) => {
-      setAppState((prev) => ({ ...prev, connection }));
-    });
-
     peerInstance.current = peer;
-    setAppState((prev) => ({ ...prev, starting: false }));
+    peer.on("call", (connection: MediaConnection) => {
+      setRtcState((prev) => ({ ...prev, connection }));
+    });
   }, []);
 
-  async function mediasCall(remoteId: string) {
+  async function call(remoteId: string) {
     const localStream = await getMediaStream();
     streamVideo(localVideoRef, localStream);
     const call = peerInstance.current?.call(remoteId, localStream);
@@ -41,19 +35,18 @@ export function useWebRTC() {
     });
   }
 
-  async function mediasAnswer() {
+  async function answer() {
     const localStream = await getMediaStream();
     streamVideo(localVideoRef, localStream);
-    appState.connection?.answer(localStream);
-    appState.connection?.on("stream", (remoteStream: MediaStream) => {
+    rtcState.connection?.answer(localStream);
+    rtcState.connection?.on("stream", (remoteStream: MediaStream) => {
       streamVideo(remoteVideoRef, remoteStream);
     });
   }
 
-  function mediasHandUp() {
-    setAppState((prev) => ({
+  function handUp() {
+    setRtcState((prev) => ({
       ...prev,
-      peerId: "",
       starting: false,
       connection: undefined,
     }));
@@ -76,15 +69,8 @@ export function useWebRTC() {
   }
 
   return {
-    starting: appState.starting,
-    localID: appState.peerId,
-    remoteID: appState.connection?.peer,
-    isCalling: !!appState.connection,
-    localVideoRef,
-    remoteVideoRef,
-    mediasCall,
-    mediasAnswer,
-    mediasHandUp,
-    getMediaStream,
+    ids: { local: rtcState.peerId, remote: rtcState.connection?.peer },
+    ref: { localVideo: localVideoRef, remoteVideo: remoteVideoRef },
+    medias: { isCalling: !!rtcState.connection, call, answer, handUp },
   };
 }

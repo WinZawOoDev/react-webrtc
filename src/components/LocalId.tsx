@@ -2,17 +2,17 @@ import { FaRegCopy } from "react-icons/fa"
 import { Button } from './ui/button'
 import { Skeleton } from './ui/skeleton'
 import { useCopyToClipboard } from 'usehooks-ts'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useToast } from './ui/use-toast'
 
 type Props = {
-    starting: boolean,
-    peerIDRef: React.RefObject<HTMLSpanElement>,
+    disabled: boolean,
     peerId: string,
 }
 
-export default function LocalId({ starting, peerIDRef, peerId }: Props) {
+export default function LocalId({ disabled, peerId }: Props) {
 
+    const peerIDRef = useRef<HTMLSpanElement>(null);
     const [value, copy] = useCopyToClipboard();
     const { toast } = useToast();
 
@@ -29,12 +29,12 @@ export default function LocalId({ starting, peerIDRef, peerId }: Props) {
 
     return (
         <div className='flex my-3 items-center justify-between'>
-            {!starting ?
+            {!disabled ?
                 <span ref={peerIDRef} className='mx-1 text-center w-full text-sm font-bold tracking-wide'>{peerId}</span>
                 : <Skeleton className='h-9 w-full mx-1' />}
             <Button
                 onClick={() => copy(peerIDRef.current?.innerText!)}
-                disabled={starting}
+                disabled={disabled}
                 className='px-6 hover:bg-gray-800'
             >
                 <span className='text-xl hover:text-gray-500'>

@@ -1,6 +1,6 @@
 import { Card } from './components/ui/card'
 import './App.css'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { Toaster } from './components/ui/toaster'
 import CallForm from './components/CallForm'
 import LocalId from './components/LocalId'
@@ -12,72 +12,62 @@ import { IoAlertCircleOutline } from 'react-icons/io5'
 
 function App() {
 
-  const {
-    starting,
-    localID,
-    remoteID,
-    mediasCall,
-    mediasAnswer,
-    mediasHandUp,
-    isCalling,
-    localVideoRef,
-    remoteVideoRef
-  } = useWebRTC();
-  const peerIDRef = useRef<HTMLSpanElement>(null);
-  const [sameIdAlert, setSameIdAlert] = useState(false);
+  const { ids, medias, ref } = useWebRTC();
+  const [appState, setAppState] = useState({ alert: false });
+
+  function handleCall(remoteID: string) {
+    if (ids.remote === ids.local) {
+      setAppState(prev => ({ ...prev, alert: true }))
+      return;
+    }
+    medias.call(remoteID)
+  }
 
   return (
-    <main className='relative flex-1 flex-col h-screen w-screen p-10 bg-gray-50'>
-      <h2 className='my-3 text-center text-2xl font-bold'>Web RTC Test</h2>
-      {sameIdAlert && (
-        <Alert variant="destructive">
-          <AlertDescription className='flex items-center'>
-            <span className='mr-2 text-2xl'>
-              <IoAlertCircleOutline />
-            </span>
-            <span className='font-semibold'>
-              ID must be remoteID
-            </span>
-          </AlertDescription>
-        </Alert>
-      )}
+    <main className='relative flex-1 flex-col h-screen w-screen p-10 bg-gray-50 '>
+      <div className='mx-auto w-full lg:max-w-4xl'>
 
-      <Card className='mx-auto my-2 p-4 lg:max-w-4xl'>
-        <CallForm
-          disableSubmit={starting}
-          handleCall={(remoteID) => {
-            if(remoteID === localID){
-              setSameIdAlert(true);
-              return;
-            }
-            mediasCall(remoteID)
-        }}
-        />
-        <LocalId
-          peerIDRef={peerIDRef}
-          starting={starting}
-          peerId={localID}
-        />
-      </Card>
-      <div className='my-10 lg:flex justify-center items-center'>
-        <div className='m-2'>
-          <VideoFrame
-            videoRef={localVideoRef}
+        <h2 className='my-3 text-center text-2xl font-bold'>Web RTC Test</h2>
+
+        {appState.alert && (
+          <Alert variant="destructive" className='mx-auto'>
+            <AlertDescription className='flex items-center'>
+              <span className='mr-2 text-2xl'>
+                <IoAlertCircleOutline />
+              </span>
+              <span className='font-semibold'>
+                ID must be remoteID
+              </span>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <Card className='mx-auto my-2 p-4'>
+          <CallForm
+            disableSubmit={!ids.local}
+            handleCall={handleCall}
           />
-        </div>
-        <div className='m-2'>
-          <VideoFrame
-            videoRef={remoteVideoRef}
+          <LocalId
+            disabled={!ids.local}
+            peerId={ids.local}
           />
+        </Card>
+
+        <div className='my-10 md:flex justify-center items-center'>
+          <VideoFrame videoRef={ref.remoteVideo} />
+          <VideoFrame videoRef={ref.localVideo} />
         </div>
+
+        <Calling
+          isCalling={medias.isCalling}
+          callerID={ids.remote!}
+          handleAnswer={medias.answer}
+          handleHandUp={medias.handUp}
+        />
+
+        <Toaster />
+
       </div>
-      <Calling
-        isCalling={isCalling}
-        callerID={remoteID!}
-        handleAnswer={mediasAnswer}
-        handleHandUp={mediasHandUp}
-      />
-      <Toaster />
     </main>
   )
 }
