@@ -38,9 +38,8 @@ function App() {
   return (
     <main className='relative flex-1 flex-col h-screen w-screen p-10 bg-gray-50 '>
       <div className='mx-auto w-full lg:max-w-4xl'>
-
+        
         <h2 className='my-3 text-center text-2xl font-bold'>Web RTC Test</h2>
-
         {appState.alert && (
           <Alert variant="destructive" className='mx-auto'>
             <AlertDescription className='flex items-center'>
