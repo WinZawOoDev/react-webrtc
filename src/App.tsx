@@ -16,7 +16,7 @@ function App() {
   const [appState, setAppState] = useState({ alert: false, isAnswer: false });
 
   function handleCall(remoteID: string) {
-    if (ids.remote === ids.local) {
+    if (remoteID === ids.local) {
       setAppState(prev => ({ ...prev, alert: true }))
       return;
     }
