@@ -10,7 +10,7 @@ const formSchema = z.object({
     remoteID: z.string().min(36, "Remote ID required").max(36, "Remote ID required"),
 })
 
-export default function CallForm({ disableSubmit, handleCall }: { disableSubmit: boolean, handleCall: (remoteVideoRef: string) => void }) {
+export default function CallForm({ disableSubmit, handleSubmit }: { disableSubmit: boolean, handleSubmit: (remoteVideoRef: string) => void }) {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -21,7 +21,7 @@ export default function CallForm({ disableSubmit, handleCall }: { disableSubmit:
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);
-        handleCall(values.remoteID);
+        handleSubmit(values.remoteID);
     }
 
     return (

@@ -12,8 +12,8 @@ import { IoAlertCircleOutline } from 'react-icons/io5'
 
 function App() {
 
-  const { ids, medias, ref } = useWebRTC();
-  const [appState, setAppState] = useState({ alert: false });
+  const { ids, medias, refs } = useWebRTC();
+  const [appState, setAppState] = useState({ alert: false, isAnswer: false });
 
   function handleCall(remoteID: string) {
     if (ids.remote === ids.local) {
@@ -21,6 +21,18 @@ function App() {
       return;
     }
     medias.call(remoteID)
+  }
+
+  function handleAnswer() {
+    medias.answer();
+    setAppState(prev => ({ ...prev, isAnswer: true }));
+  }
+
+  function handleHandUp() {
+    medias.handUp();
+    if (appState.isAnswer) {
+      setAppState(prev => ({ ...prev, isAnswer: false }));
+    }
   }
 
   return (
@@ -45,7 +57,7 @@ function App() {
         <Card className='mx-auto my-2 p-4'>
           <CallForm
             disableSubmit={!ids.local}
-            handleCall={handleCall}
+            handleSubmit={handleCall}
           />
           <LocalId
             disabled={!ids.local}
@@ -54,15 +66,15 @@ function App() {
         </Card>
 
         <div className='my-10 md:flex justify-center items-center'>
-          <VideoFrame videoRef={ref.remoteVideo} />
-          <VideoFrame videoRef={ref.localVideo} />
+          <VideoFrame videoRef={refs.remoteVideo} />
+          <VideoFrame videoRef={refs.localVideo} />
         </div>
 
         <Calling
-          isCalling={medias.isCalling}
+          isCalling={medias.isCalling && !appState.isAnswer}
           callerID={ids.remote!}
-          handleAnswer={medias.answer}
-          handleHandUp={medias.handUp}
+          handleAnswer={handleAnswer}
+          handleHandUp={handleHandUp}
         />
 
         <Toaster />

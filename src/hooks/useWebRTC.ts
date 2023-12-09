@@ -11,6 +11,7 @@ export function useWebRTC() {
     peerId: "",
     connection: undefined,
   });
+
   const peerInstance = useRef<Peer | undefined>();
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -70,7 +71,7 @@ export function useWebRTC() {
 
   return {
     ids: { local: rtcState.peerId, remote: rtcState.connection?.peer },
-    ref: { localVideo: localVideoRef, remoteVideo: remoteVideoRef },
+    refs: { localVideo: localVideoRef, remoteVideo: remoteVideoRef },
     medias: { isCalling: !!rtcState.connection, call, answer, handUp },
   };
 }
